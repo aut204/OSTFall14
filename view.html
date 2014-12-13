@@ -13,8 +13,9 @@
     <i>created at {{ question.created }}</i> <br/>
     <i>modified at {{ question.modified }}</i> <br/>
     Votes: {{ question.q_total_votes }} <br/>
-    <a href="/edit_q.html?id={{ question.key.urlsafe() }}">Edit Question</a>
-    <a href="/vote.html?id={{ question.key.urlsafe() }}">Vote Question</a>
+    <a href="/edit_q.html?id={{ question.key.urlsafe() }}">Edit Question</a><br/>
+    <a href="/vote.html?id={{ question.key.urlsafe() }}&&type=que&&vote=up">Vote Up</a>
+    <a href="/vote.html?id={{ question.key.urlsafe() }}&&type=que&&vote=down">Vote Down</a>
     <br/>
     <a href="/rss.xml?id={{ question.key.urlsafe() }}">RSS</a>
     <hr/>
@@ -33,8 +34,9 @@
         <i>created at {{ ans.created }}</i><br/>
         <i>modified at {{ ans.modified }}</i><br/>
         Votes: {{ ans.a_total_votes }}<br/>
-        <a href="/edit_a.html?id={{ ans.key.urlsafe() }}">Edit Answer</a>
-        <a href="/vote.html?id={{ ans.key.urlsafe() }}">Vote Answer</a>
+        <a href="/edit_a.html?id={{ ans.key.urlsafe() }}">Edit Answer</a><br/>
+        <a href="/vote.html?id={{ ans.key.urlsafe() }}&&type=ans&&vote=up">Vote Up</a>
+        <a href="/vote.html?id={{ ans.key.urlsafe() }}&&type=ans&&vote=down">Vote Down</a>
         <br/><br/>
         {% endfor %}
     </div>

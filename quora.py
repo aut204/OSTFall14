@@ -19,8 +19,9 @@ class Question(ndb.Model):
 	tags = ndb.StringProperty(repeated=True)
 	created= ndb.DateTimeProperty(auto_now_add=True)
 	modified= ndb.DateTimeProperty(auto_now=True)
-	#q_vote = db.StringProperty(choices=['Up', 'Down'])
 	q_total_votes = ndb.IntegerProperty(default=0)
+	q_up_votes = ndb.StringProperty(repeated=True,indexed=False)
+	q_down_votes = ndb.StringProperty(repeated=True,indexed=False)
 
 class Answer(ndb.Model):
 	author = ndb.UserProperty()
@@ -30,8 +31,9 @@ class Answer(ndb.Model):
 	#tags = ndb.StringProperty(repeated=True)
 	created= ndb.DateTimeProperty(auto_now_add=True)
 	modified= ndb.DateTimeProperty(auto_now=True)
-	#a_vote = db.StringProperty(choices=['Up', 'Down'])
 	a_total_votes = ndb.IntegerProperty(default=0)
+	a_up_votes = ndb.StringProperty(repeated=True,indexed=False)
+	a_down_votes = ndb.StringProperty(repeated=True,indexed=False)
 
 class createQuestion(webapp2.RequestHandler):
 	""" Creates a new question """
@@ -245,11 +247,67 @@ class rssGenerate(webapp2.RequestHandler):
  		self.response.headers['Content-Type']='text/xml'
 		self.response.write(template.render(template_values))
 
+class vote(webapp2.RequestHandler):
+	def get(self):
+		user = users.get_current_user()
+		if not user:
+			self.redirect('/')
+		elif user:
+			typeQuery = self.request.get('type')
+			if typeQuery=="que":
+				ID=self.request.get('id')
+				checkID=ndb.Key(urlsafe=ID)
+				question = checkID.get()
+				#votes=[]
+				voteType = self.request.get('vote')
+				if voteType=="up":
+					#votes = question.q_up_votes
+					if str(user) not in question.q_up_votes:
+						question.q_up_votes.append(str(user))
+						if str(user) in question.q_down_votes:
+							question.q_down_votes.remove(str(user))
+					#question.q_up_votes = votes
+				elif voteType=="down":
+					#votes = question.q_down_votes
+					if str(user) not in question.q_down_votes:
+						question.q_down_votes.append(str(user))
+						if str(user) in question.q_up_votes:
+							question.q_up_votes.remove(str(user))
+					#question.q_down_votes = votes
+				question.q_total_votes = len(question.q_up_votes) - len(question.q_down_votes)
+				question.put()
+				redirString = '/view.html?id='+checkID.urlsafe()
+			elif typeQuery=="ans":
+				ID=self.request.get('id')
+				checkID=ndb.Key(urlsafe=ID)
+				answer = checkID.get()
+				#votes=[]
+				voteType = self.request.get('vote')
+				if voteType=="up":
+					#votes = answer.a_up_votes
+					if str(user) not in answer.a_up_votes:
+						answer.a_up_votes.append(str(user))
+						if str(user) in answer.a_down_votes:
+							answer.a_down_votes.remove(str(user))
+					#answer.a_up_votes = votes
+				elif voteType=="down":
+					#votes = answer.a_down_votes
+					if str(user) not in answer.a_down_votes:
+						answer.a_down_votes.append(str(user))
+						if str(user) in answer.a_up_votes:
+							answer.a_up_votes.remove(str(user))
+					#answer.a_down_votes = votes
+				answer.a_total_votes = len(answer.a_up_votes) - len(answer.a_down_votes)
+				redirString = '/view.html?id='+answer.que_id.urlsafe()
+				answer.put()
+			self.redirect(redirString)
+
 application = webapp2.WSGIApplication([
 	('/', MainPage),
 	('/create.html', createQuestion),
 	('/view.html', viewQuestion),
 	('/edit_q.html', editQuestion),
 	('/edit_a.html', editAnswer),
+	('/vote.html', vote),
 	('/rss.xml', rssGenerate),
 ], debug=True)

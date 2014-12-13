@@ -21,8 +21,20 @@ indexes:
 - kind: Answer
   properties:
   - name: que_id
+  - name: a_total_votes
+
+- kind: Answer
+  properties:
+  - name: que_id
   - name: created
     direction: desc
+
+- kind: Answer
+  properties:
+  - name: que_id
+  - name: created
+    direction: desc
+  - name: a_total_votes
 
 - kind: Question
   properties:

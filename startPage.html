@@ -16,7 +16,7 @@
         <a href="/view.html?id={{ que.key.urlsafe() }}">
         <b> {{ que.content }} <b><br/>
         </a>
-        <i>by {{ que.author }}</i> <i>created at {{ que.created }}</i><br/>
+        <i>created by {{ que.author }}</i> <i>at {{ que.created }}</i><br/>
         Tags: <br/>
         {% for tag in que.tags %}
         {{ tag }},

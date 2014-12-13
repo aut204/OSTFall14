@@ -5,13 +5,16 @@
   <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
 </head>
   <body>
-    <p class="urlCheck"><a href="{{ url|safe }}">{{ url_linktext }}</a></p>
+      {{ user }}<br/>
+    <a href="{{ url|safe }}">{{ url_linktext }}</a>
     <h3> New Question </h3>
     </hr>
-    
     <form role="form" method="post">
-        <div>
-            <textarea name="content" rows="5" cols="100"></textarea></div>
+        <div><textarea name="content" rows="5" cols="100"></textarea></div>
+        <br/>
+        <b>Tags:</b><br/>
+        <div><textarea name="tags" cols="100"></textarea></div>
+        <br/>
       <div><input type="submit" name="Submit"></div>
     </form>
 

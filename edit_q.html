@@ -4,6 +4,7 @@
   <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
 </head>
   <body>
+      {{ user }}<br/>
     <a href="{{ url|safe }}">{{ url_linktext }}</a><br/>
     <a href="/">Home</a>
     <br/><br/>
@@ -13,6 +14,9 @@
         <div>
             <textarea name="content" rows="5" cols="100">{{ question.content }}</textarea></div>
             <input type="hidden" name="id" value="{{ question.key.urlsafe() }}">
+                <br/>
+                <b>Tags:</b><br/>
+                <div><textarea name="tags" cols="100">{{ tags }}</textarea></div>
       <div><input type="submit" name="Submit"></div>
     </form>
     <hr/>

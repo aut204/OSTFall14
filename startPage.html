@@ -5,6 +5,7 @@
   <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
 </head>
   <body>
+      {{ user }}<br/>
     <a href="{{ url|safe }}">{{ url_linktext }}</a>
     <br/>
     <a href="/create.html">Create Question</a>
@@ -13,15 +14,19 @@
     <div>
         {% for que in question %}
         <a href="/view.html?id={{ que.key.urlsafe() }}">
-        <h3> {{ que.content }} </h3>
+        <b> {{ que.content }} <b><br/>
         </a>
-        <i>by {{ que.author }}</i> <i>created at {{ que.created }}</i>
+        <i>by {{ que.author }}</i> <i>created at {{ que.created }}</i><br/>
+        Tags: <br/>
+        {% for tag in que.tags %}
+        {{ tag }},
+        {% endfor %}
         <br/><br/>
         {% endfor %}
     </div>
     {% if cursor %}
     <a class="btn" href="?cursor={{cursor}}">more..</a>
     {% endif %}
-  </body>
+    </body>
 </html>
 {% endautoescape %}

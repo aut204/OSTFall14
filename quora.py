@@ -40,6 +40,7 @@ class Answer(ndb.Model):
 class createQuestion(webapp2.RequestHandler):
 	""" Creates a new question """
 	def get(self):
+		user = users.get_current_user()
 		"""Create question only if user is logged in"""
 		if users.get_current_user():
 			url = users.create_logout_url(self.request.uri)
@@ -51,6 +52,7 @@ class createQuestion(webapp2.RequestHandler):
 
 		""" Give template values"""
 		template_values = {
+		'user': user,
 		'url': url,
 		'url_linktext': url_linktext
 		}
@@ -62,6 +64,11 @@ class createQuestion(webapp2.RequestHandler):
 		question.author = users.get_current_user()
 		#question.name = self.request.get('name')
 		question.content = self.request.get('content')
+		tags = str(self.request.get('tags'))
+		tags_new=[]
+		for t in range(len(tags.split(','))):
+			tags_new.append(tags.split(',')[t])
+		question.tags = tags_new
 		question.put()
 		self.redirect('/')
 
@@ -88,6 +95,7 @@ class MainPage(webapp2.RequestHandler):
 		#self.generate('home.html', {'items': items, 'cursor': next_c })
 
 		template_values = {
+		'user': user,
 	    'url': url,
 	    'url_linktext': url_linktext,
 		'question': que,
@@ -98,6 +106,7 @@ class MainPage(webapp2.RequestHandler):
 
 class viewQuestion(webapp2.RequestHandler):
 	def get (self):
+		user = users.get_current_user()
 		if users.get_current_user():
 			url = users.create_logout_url(self.request.uri)
 			url_linktext = 'Logout'
@@ -121,6 +130,7 @@ class viewQuestion(webapp2.RequestHandler):
 		#self.generate('home.html', {'items': items, 'cursor': next_c })
 
 		template_values = {
+		'user': user,
 	    'url': url,
 	    'url_linktext': url_linktext,
 		'question': question,
@@ -146,14 +156,20 @@ class viewQuestion(webapp2.RequestHandler):
 
 class editQuestion(webapp2.RequestHandler):
 	def get(self):
+		user = users.get_current_user()
 		ID=self.request.get('id')
  		checkID=ndb.Key(urlsafe=ID)
  		question = checkID.get()
  		if users.get_current_user()==question.author:
  			url = users.create_logout_url(self.request.uri)
 			url_linktext = 'Logout'
+			tags=""
+			for tag in question.tags:
+				tags=tags+tag+","
 			""" Give template values"""
 			template_values = {
+			'user': user,
+			'tags': tags,
 			'question': question,
 			'url': url,
 			'url_linktext': url_linktext
@@ -170,12 +186,18 @@ class editQuestion(webapp2.RequestHandler):
  		check=ndb.Key(urlsafe=ID_new)
  		questi = check.get()
 		questi.content = self.request.get('content')
+		tags = str(self.request.get('tags'))
+		tags_new=[]
+		for t in range(len(tags.split(','))):
+			tags_new.append(tags.split(',')[t])
+		questi.tags = tags_new
 		questi.put()
 		redirString = '/view.html?id='+check.urlsafe()
 		self.redirect(redirString)
 
 class editAnswer(webapp2.RequestHandler):
 	def get(self):
+		user = users.get_current_user()
 		ID=self.request.get('id')
  		checkID=ndb.Key(urlsafe=ID)
  		answer = checkID.get()
@@ -187,6 +209,7 @@ class editAnswer(webapp2.RequestHandler):
 			url_linktext = 'Logout'
 			""" Give template values"""
 			template_values = {
+			'user': user,
 			'question': question,
 			'answer': answer,
 			'url': url,

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+<channel>
+	<title>Question: {{ question.content }}</title>
+	<title>Author: {{ question.author }}</title>
+	<title>Created: {{ question.created }}</title>
+	<title>Modified: {{ question.modified }}</title>
+	{% for ans in answer%}
+		<item>
+		<title>Answer: {{ ans.content }}</title>
+		<author>Author: {{ ans.author }}</author>
+		<ansCreated>Created: {{ ans.created }}</ansCreated>
+		<ansModified>Modified: {{ ans.modified }}</ansModified>
+		</item>
+	{% endfor %} 
+</channel>
+</rss>

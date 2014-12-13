@@ -7,10 +7,6 @@ from google.appengine.ext import ndb
 import jinja2
 import webapp2
 
-from django.core.paginator import Paginator
-
-#count = 0
-
 JINJA_ENVIRONMENT = jinja2.Environment(
 	loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
 	extensions=['jinja2.ext.autoescape'],
@@ -233,10 +229,27 @@ class editAnswer(webapp2.RequestHandler):
 		redirString = '/view.html?id='+check.urlsafe()
 		self.redirect(redirString)
 
+class rssGenerate(webapp2.RequestHandler):
+	def get(self):
+		user = users.get_current_user()
+		ID=self.request.get('id')
+ 		checkID=ndb.Key(urlsafe=ID)
+ 		question = checkID.get()
+ 		answer_query = Answer.query(Answer.que_id==checkID)
+ 		answers = answer_query.fetch()
+ 		template_values = {
+ 		'answer': answers,
+ 		'question': question
+ 		}
+ 		template = JINJA_ENVIRONMENT.get_template('rss.xml')
+ 		self.response.headers['Content-Type']='text/xml'
+		self.response.write(template.render(template_values))
+
 application = webapp2.WSGIApplication([
 	('/', MainPage),
 	('/create.html', createQuestion),
 	('/view.html', viewQuestion),
 	('/edit_q.html', editQuestion),
 	('/edit_a.html', editAnswer),
+	('/rss.xml', rssGenerate),
 ], debug=True)

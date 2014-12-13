@@ -15,6 +15,8 @@
     Votes: {{ question.q_total_votes }} <br/>
     <a href="/edit_q.html?id={{ question.key.urlsafe() }}">Edit Question</a>
     <a href="/vote.html?id={{ question.key.urlsafe() }}">Vote Question</a>
+    <br/>
+    <a href="/rss.xml?id={{ question.key.urlsafe() }}">RSS</a>
     <hr/>
     <b>New Answer</b>
     <form role="form" method="post">

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+<head>
+  <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+</head>
+  <body>
+    <a href="{{ url|safe }}">{{ url_linktext }}</a>
+    <br/>
+    <a href="/create.html">Create Question</a>
+    <br/><br/>
+    <b><h1>List Of Questions</h1></b>
+    <div>
+        {% for que in question %}
+        <a href="/view.html?id={{ que.key.urlsafe() }}">
+        <h3> {{ que.content }} </h3>
+        </a>
+        <i>by {{ que.author }}</i>
+        <br/><br/>
+        {% endfor %}
+    </div>
+    {% if cursor %}
+    <a class="btn" href="?cursor={{cursor}}">more..</a>
+    {% endif %}
+  </body>
+</html>
+{% endautoescape %}

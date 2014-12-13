@@ -1,0 +1,39 @@
+{% autoescape true %}
+<html>
+<head>
+  <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+</head>
+  <body>
+    <a href="{{ url|safe }}">{{ url_linktext }}</a><br/>
+    <a href="/">Home</a>
+    <br/><br/>
+    <b>Question</b><br/>
+    {{ question.content }} <br/>
+    Votes: {{ question.q_total_votes }} <br/>
+    <a href="/view.html?id={{ question.key.urlsafe() }}&&type=que&&vote=up">Vote Up</a>
+    <a href="/view.html?id={{ question.key.urlsafe() }}&&type=que&&vote=down">Vote Down</a>
+    <hr/>
+    <b>New Answer</b>
+    <form role="form" method="post">
+        <div>
+            <textarea name="content" rows="5" cols="100"></textarea></div>
+      <div><input type="submit" name="Submit"></div>
+    </form>
+    <hr/>
+    <b>Answers</b>
+    <div>
+        {% for ans in answer %}
+        {{ ans.content }} <br/>
+        <i>by {{ ans.author }}</i><br/>
+        Votes: {{ ans.a_total_votes }}<br/>
+        <a href="/view.html?id={{ ans.key.urlsafe() }}&&type=ans&&vote=up">Vote Up</a>
+        <a href="/view.html?id={{ ans.key.urlsafe() }}&&type=ans&&vote=down">Vote Down</a>
+        <br/><br/>
+        {% endfor %}
+    </div>
+    {% if cursor %}
+    <a class="btn" href="?cursor={{cursor}}">more..</a>
+    {% endif %}
+  </body>
+</html>
+{% endautoescape %}

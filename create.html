@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+{% autoescape true %}
+<html>
+<head>
+  <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+</head>
+  <body>
+    <p class="urlCheck"><a href="{{ url|safe }}">{{ url_linktext }}</a></p>
+    <h3> New Question </h3>
+    </hr>
+    
+    <form role="form" method="post">
+        <div>
+            <textarea name="content" rows="5" cols="100"></textarea></div>
+      <div><input type="submit" name="Submit"></div>
+    </form>
+
+    <hr>
+
+  </body>
+</html>
+{% endautoescape %}

@@ -20,8 +20,9 @@ class Question(ndb.Model):
 	author = ndb.UserProperty()
 	#name = ndb.StringProperty(indexed=False)
 	content = ndb.StringProperty(indexed=False)
-	#tags = ndb.StringProperty(repeated=True)
+	tags = ndb.StringProperty(repeated=True)
 	created= ndb.DateTimeProperty(auto_now_add=True)
+	modified= ndb.DateTimeProperty(auto_now=True)
 	#q_vote = db.StringProperty(choices=['Up', 'Down'])
 	q_total_votes = ndb.IntegerProperty(default=0)
 
@@ -32,6 +33,7 @@ class Answer(ndb.Model):
 	ans_id = ndb.KeyProperty()
 	#tags = ndb.StringProperty(repeated=True)
 	created= ndb.DateTimeProperty(auto_now_add=True)
+	modified= ndb.DateTimeProperty(auto_now=True)
 	#a_vote = db.StringProperty(choices=['Up', 'Down'])
 	a_total_votes = ndb.IntegerProperty(default=0)
 
@@ -142,10 +144,76 @@ class viewQuestion(webapp2.RequestHandler):
 		else:
 			self.redirect(users.create_login_url(self.request.uri))
 
+class editQuestion(webapp2.RequestHandler):
+	def get(self):
+		ID=self.request.get('id')
+ 		checkID=ndb.Key(urlsafe=ID)
+ 		question = checkID.get()
+ 		if users.get_current_user()==question.author:
+ 			url = users.create_logout_url(self.request.uri)
+			url_linktext = 'Logout'
+			""" Give template values"""
+			template_values = {
+			'question': question,
+			'url': url,
+			'url_linktext': url_linktext
+			}
+			template = JINJA_ENVIRONMENT.get_template('edit_q.html')
+			self.response.write(template.render(template_values))
+		elif not users.get_current_user():
+			self.redirect(users.create_login_url(self.request.uri))
+		elif users.get_current_user():
+			self.redirect('/')
 
+	def post(self):
+		ID_new=self.request.get('id')
+ 		check=ndb.Key(urlsafe=ID_new)
+ 		questi = check.get()
+		questi.content = self.request.get('content')
+		questi.put()
+		redirString = '/view.html?id='+check.urlsafe()
+		self.redirect(redirString)
+
+class editAnswer(webapp2.RequestHandler):
+	def get(self):
+		ID=self.request.get('id')
+ 		checkID=ndb.Key(urlsafe=ID)
+ 		answer = checkID.get()
+ 		qid = answer.que_id
+ 		#checkQ = ndb.Key(urlsafe=qid)
+ 		question = qid.get()
+ 		if users.get_current_user()==answer.author:
+ 			url = users.create_logout_url(self.request.uri)
+			url_linktext = 'Logout'
+			""" Give template values"""
+			template_values = {
+			'question': question,
+			'answer': answer,
+			'url': url,
+			'url_linktext': url_linktext
+			}
+			template = JINJA_ENVIRONMENT.get_template('edit_a.html')
+			self.response.write(template.render(template_values))
+		elif not users.get_current_user():
+			self.redirect(users.create_login_url(self.request.uri))
+		elif users.get_current_user():
+			self.redirect('/')
+
+	def post(self):
+		ansid = self.request.get('aid')
+		checkA = ndb.Key(urlsafe=ansid)
+		answer = checkA.get()
+		answer.content = self.request.get('content')
+		answer.put()
+		ID_new=self.request.get('qid')
+ 		check=ndb.Key(urlsafe=ID_new)
+		redirString = '/view.html?id='+check.urlsafe()
+		self.redirect(redirString)
 
 application = webapp2.WSGIApplication([
 	('/', MainPage),
 	('/create.html', createQuestion),
 	('/view.html', viewQuestion),
+	('/edit_q.html', editQuestion),
+	('/edit_a.html', editAnswer),
 ], debug=True)

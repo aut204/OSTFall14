@@ -1,0 +1,21 @@
+{% autoescape true %}
+<html>
+<head>
+  <link type="text/css" rel="stylesheet" href="/stylesheets/main.css" />
+</head>
+  <body>
+    <a href="{{ url|safe }}">{{ url_linktext }}</a><br/>
+    <a href="/">Home</a>
+    <br/><br/>
+    <b>Edit Question</b><br/>
+    <hr/>
+    <form role="form" method="post">
+        <div>
+            <textarea name="content" rows="5" cols="100">{{ question.content }}</textarea></div>
+            <input type="hidden" name="id" value="{{ question.key.urlsafe() }}">
+      <div><input type="submit" name="Submit"></div>
+    </form>
+    <hr/>
+  </body>
+</html>
+{% endautoescape %}

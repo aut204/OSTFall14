@@ -15,7 +15,7 @@
         <a href="/view.html?id={{ que.key.urlsafe() }}">
         <h3> {{ que.content }} </h3>
         </a>
-        <i>by {{ que.author }}</i>
+        <i>by {{ que.author }}</i> <i>created at {{ que.created }}</i>
         <br/><br/>
         {% endfor %}
     </div>

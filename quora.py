@@ -1,8 +1,11 @@
 import os
 import urllib
+import re
 
 from google.appengine.api import users
 from google.appengine.ext import ndb
+from google.appengine.ext import blobstore
+from google.appengine.ext.webapp import blobstore_handlers
 
 import jinja2
 import webapp2
@@ -61,7 +64,11 @@ class createQuestion(webapp2.RequestHandler):
 		question = Question()
 		question.author = users.get_current_user()
 		#question.name = self.request.get('name')
+		exp = re.compile(r"(https?://[^ ]+(\.png|\.jpg|\.gif))")
 		question.content = self.request.get('content')
+		question.content = exp.sub(r'<br><br><img src="\1" style="max-width:600px;"> <br>',question.content)
+		exp1 = re.compile(r"(?<!\")(https?://[^ ]+)")
+		question.content = exp1.sub(r'<a href="\1">\1</a>',question.content)
 		tags = str(self.request.get('tags'))
 		tags_new=[]
 		for t in range(len(tags.split(','))):
@@ -102,7 +109,7 @@ class MainPage(webapp2.RequestHandler):
 		template = JINJA_ENVIRONMENT.get_template('startPage.html')
 		self.response.write(template.render(template_values))
 
-class viewQuestion(webapp2.RequestHandler):
+class viewQuestion(blobstore_handlers.BlobstoreUploadHandler, blobstore_handlers.BlobstoreDownloadHandler):
 	def get (self):
 		user = users.get_current_user()
 		if users.get_current_user():
@@ -127,13 +134,16 @@ class viewQuestion(webapp2.RequestHandler):
 			next_c = None
 		#self.generate('home.html', {'items': items, 'cursor': next_c })
 
+		upload_url = blobstore.create_upload_url('/upload')
+
 		template_values = {
 		'user': user,
 	    'url': url,
 	    'url_linktext': url_linktext,
 		'question': question,
 		'answer': ans,
-		'cursor': next_c
+		'cursor': next_c,
+		'upload_url': upload_url
 	    }
 		template = JINJA_ENVIRONMENT.get_template('view.html')
 		self.response.write(template.render(template_values))
@@ -146,7 +156,19 @@ class viewQuestion(webapp2.RequestHandler):
 			answer.que_id = ndb.Key(urlsafe=questID)
 			#question.name = self.request.get('name')
 			answer.content = self.request.get('content')
+			exp = re.compile(r"(https?://[^ ]+(\.png|\.jpg|\.gif))")
+			answer.content = self.request.get('content')
+			answer.content = exp.sub(r'<br><br><img src="\1" style="max-width:600px;"> <br>',answer.content)
+			exp1 = re.compile(r"(?<!\")(https?://[^ ]+)")
+			answer.content = exp1.sub(r'<a href="\1">\1</a>',answer.content)
 			answer.put()
+			#upload_files = self.get_uploads('file')  # 'file' is file upload field in the form
+			#blob_info = upload_files[0]
+			#self.get_serving_url(blob_info)
+			#resource = str(urllib.unquote(resource))
+			#blob_info = blobstore.BlobInfo.get(resource)
+			#self.get_serving_url(blob_info)
+			#self.redirect('/serve/%s' % blob_info.key())
 			redirString = '/view.html?id='+answer.que_id.urlsafe()
 			self.redirect(redirString)
 		else:
@@ -183,7 +205,11 @@ class editQuestion(webapp2.RequestHandler):
 		ID_new=self.request.get('id')
  		check=ndb.Key(urlsafe=ID_new)
  		questi = check.get()
+		exp = re.compile(r"(https?://[^ ]+(\.png|\.jpg|\.gif))")
 		questi.content = self.request.get('content')
+		questi.content = exp.sub(r'<br><br><img src="\1" style="max-width:600px;"> <br>',questi.content)
+		exp1 = re.compile(r"(?<!\")(https?://[^ ]+)")
+		questi.content = exp1.sub(r'<a href="\1">\1</a>',questi.content)
 		tags = str(self.request.get('tags'))
 		tags_new=[]
 		for t in range(len(tags.split(','))):
@@ -225,6 +251,9 @@ class editAnswer(webapp2.RequestHandler):
 		checkA = ndb.Key(urlsafe=ansid)
 		answer = checkA.get()
 		answer.content = self.request.get('content')
+		answer.content = exp.sub(r'<br><br><img src="\1" style="max-width:600px;"> <br>',answer.content)
+		exp1 = re.compile(r"(?<!\")(https?://[^ ]+)")
+		answer.content = exp1.sub(r'<a href="\1">\1</a>',answer.content)
 		answer.put()
 		ID_new=self.request.get('qid')
  		check=ndb.Key(urlsafe=ID_new)

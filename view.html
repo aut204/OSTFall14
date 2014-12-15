@@ -9,7 +9,9 @@
     <a href="/">Home</a>
     <br/><br/>
     <b>Question</b><br/>
+    {% autoescape off%}
     {{ question.content }} <br/>
+    {% endautoescape %}
     <i>created at {{ question.created }}</i> <br/>
     <i>modified at {{ question.modified }}</i> <br/>
     Votes: {{ question.q_total_votes }} <br/>
@@ -29,7 +31,9 @@
     <b>Answers</b>
     <div>
         {% for ans in answer %}
+        {% autoescape off%} 
         {{ ans.content }} <br/>
+        {% endautoescape %}
         <i>by {{ ans.author }}</i><br/>
         <i>created at {{ ans.created }}</i><br/>
         <i>modified at {{ ans.modified }}</i><br/>
